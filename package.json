@@ -1,0 +1,17 @@
+{
+  "name": "dcl-scheduler",
+  "version": "0.0.1",
+  "description": "\"A DCL Game Scheduler\"",
+  "main": "index.js",
+  "scripts": {
+    "start": "node scheduler.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ravikiran Ramachandra",
+  "license": "ISC",
+  "dependencies": {
+    "assert": "^1.3.0",
+    "bunyan": "1.3.2",
+    "underscore": "^1.8.3"
+  }
+}
