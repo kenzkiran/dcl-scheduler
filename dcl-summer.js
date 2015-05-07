@@ -1,5 +1,6 @@
-var roundRobin = requre('./round-robin.js');
+var roundRobin = require('./round-robin.js');
 var groundAllocator = require('./ground-allocator.js');
+var log = require('./logger.js')();
 
 var scheduleSummer = function(config) {
 
@@ -12,4 +13,7 @@ var scheduleSummer = function(config) {
     if (matches && matches.length > 0) {
 
     }
+    log.info({slots: groundAllocator(null, grounds)}, "DCL Summer: Ground Slots: ");
 }
+
+module.exports = scheduleSummer;
