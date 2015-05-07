@@ -26,4 +26,5 @@ var testlogger = function() {
     }
 }
 
-module.exports = testlogger;
+//module.exports = testlogger;
+module.exports = createLogger;
