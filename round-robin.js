@@ -8,7 +8,7 @@ var Match = require('./Match.js');
  * Assign a match ID, will be useful in future.
  */
 var getMatchId = function(matchNumber) {
-    return 'TT-' + matchNumber;
+    return 'DCL-' + matchNumber;
 }
 
 /***
