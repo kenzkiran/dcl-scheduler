@@ -2,6 +2,7 @@ var dclConstants = require('./dcl-constants.js');
 var INFINITY =  Number.POSITIVE_INFINITY;
 
 var GROUND_TYPES = dclConstants.GROUND_TYPES;
+var DAYS_OF_WEEK  = dclConstants.DAYS_OF_WEEK;
 
 function Ground(name, options) {
 
@@ -45,6 +46,21 @@ Ground.prototype.getAvailability = function() {
     return this.options.availability;
 };
 
+/**
+ * Sets day of week availability for the ground
+ * @param dayOfTheWeek
+ * @param available {boolean} optional, defaults to true;
+ */
+Ground.prototype.setAvailability = function(dayOfTheWeek, available) {
+    available = available || true;
+    if (DAYS_OF_WEEK.indexOf(dayOfTheWeek) !== -1)
+        this.options.availability[dayOfTheWeek] = available;
+}
+
+Ground.prototype.isAvailableOnDay = function(dayOfTheWeek) {
+    return this.options.availability[dayOfTheWeek] === true;
+}
+
 /* For now assume */
 Ground.prototype.getSlots = function() {
     return this.options.slots;
@@ -63,5 +79,9 @@ Ground.prototype.forTape = function() {
     }
     return false;
 };
+
+Ground.prototype.toString = function() {
+    return "Ground: " + this.name;
+}
 
 module.exports = Ground;

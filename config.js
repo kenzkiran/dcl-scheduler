@@ -29,10 +29,15 @@ var TEAMS_DIV_B = [
 
 var GROUNDS = {
     bangalore: new Ground("Bengaluru", {slots: 1, max: 2}),
-    chennai:  new Ground("Chennai", {slots: 1, max: -1}),
-    mysore:  new Ground("Mysore", {slots: 2, max: -1}),
-    dallas:  new Ground("Dallas", {slots: 3, max: 4}),
+    chennai:  new Ground("Chennai", {slots: 2, max: -1}),
+    mysore:  new Ground("Mysore", {slots: 3, max: -1}),
+    dallas:  new Ground("Dallas", {slots: 4, max: 4}),
 };
+
+// for testing
+GROUNDS.bangalore.setAvailability('sun', false);
+GROUNDS.mysore.setAvailability('sat', false);
+GROUNDS.chennai.setAvailability('fri');
 
 
 var DIVISIONS = {
