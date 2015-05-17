@@ -1,39 +1,43 @@
-var LEAGUE_TYPES = { LEATHER: 'L', TAPE: 'T' }
-var DIV_TYPES = { DIV_A: 'div_a', DIV_B: 'div_b'};
+var dclConstants = require('./dcl-constants.js');
+var Ground = require('./Ground.js');
+var Team = require('./Team.js');
+var Divisions = require('./Divisions.js');
+var _ = require('underscore');
+var DIV_TYPES = dclConstants.DIV_TYPES;
+var LEAGUE_TYPES = dclConstants.LEAGUE_TYPES;
+
 
 var TEAMS_DIV_A = [
     // Div A Teams
-    { name: "Anderson", div: DIV_TYPES.DIV_A, type: LEAGUE_TYPES.TAPE },
-    { name: "Bradman", div: DIV_TYPES.DIV_A, type: LEAGUE_TYPES.TAPE },
-    { name: "Crains", div: DIV_TYPES.DIV_A, type: LEAGUE_TYPES.TAPE },
-    { name: "Dravid", div: DIV_TYPES.DIV_A, type: LEAGUE_TYPES.TAPE },
-    { name: "Eoin", div: DIV_TYPES.DIV_A, type: LEAGUE_TYPES.TAPE },
-    { name: "Faulkner", div: DIV_TYPES.DIV_A, type: LEAGUE_TYPES.TAPE }
+    new Team('Anderson', DIV_TYPES.DIV_A, LEAGUE_TYPES.TAPE),
+    new Team('Bradman', DIV_TYPES.DIV_A, LEAGUE_TYPES.TAPE),
+    new Team('Crains', DIV_TYPES.DIV_A, LEAGUE_TYPES.TAPE),
+    new Team('Dravid', DIV_TYPES.DIV_A, LEAGUE_TYPES.TAPE),
+    new Team('Eoin', DIV_TYPES.DIV_A, LEAGUE_TYPES.TAPE),
+    new Team('Faulkner', DIV_TYPES.DIV_A, LEAGUE_TYPES.TAPE)
 ]
 
 var TEAMS_DIV_B = [
     // Div B Teams
-    { name: "Arya", div: DIV_TYPES.DIV_B, type: LEAGUE_TYPES.TAPE },
-    { name: "Bhaskar", div: DIV_TYPES.DIV_B, type: LEAGUE_TYPES.TAPE },
-    { name: "Cheluva", div: DIV_TYPES.DIV_B, type: LEAGUE_TYPES.TAPE },
-    { name: "Dumya", div: DIV_TYPES.DIV_B, type: LEAGUE_TYPES.TAPE },
-    { name: "Ekalavya", div: DIV_TYPES.DIV_B, type: LEAGUE_TYPES.TAPE }
+    new Team('Arya', DIV_TYPES.DIV_B, LEAGUE_TYPES.TAPE),
+    new Team('Bhaskar', DIV_TYPES.DIV_B, LEAGUE_TYPES.TAPE),
+    new Team('Cheluva', DIV_TYPES.DIV_B, LEAGUE_TYPES.TAPE),
+    new Team('Dumya', DIV_TYPES.DIV_B, LEAGUE_TYPES.TAPE),
+    new Team('Ekalavya', DIV_TYPES.DIV_B, LEAGUE_TYPES.TAPE)
 ];
 
-/**
- * @slots {number} Number of slots per day (e.g)
- * @max {number} Max number of games that can be scheduled, -1 = UNLIMITED
- */
+
 var GROUNDS = {
-    bangalore: {name: "Bengaluru", slots: 1, max: 2},
-    chennai: {name: "Chennai", slots: 1, max: -1},
-    mysore: {name: "Mysore", slots: 2, max: -1},
-    dallas: {name: "Dallas", slots: 3, max: 4}
+    bangalore: new Ground("Bengaluru", {slots: 1, max: 2}),
+    chennai:  new Ground("Chennai", {slots: 1, max: -1}),
+    mysore:  new Ground("Mysore", {slots: 2, max: -1}),
+    dallas:  new Ground("Dallas", {slots: 3, max: 4}),
 };
 
+
 var DIVISIONS = {
-    DIV_A: {teams: TEAMS_DIV_A, umpires: 'DIV_B', grounds: [GROUNDS.bangalore, GROUNDS.chennai, GROUNDS.mysore]},
-    DIV_B: {teams: TEAMS_DIV_B, umpires: 'DIV_A', grounds: [GROUNDS.bangalore, GROUNDS.chennai, GROUNDS.dallas]}
+    DIV_A: {teams: _.clone(TEAMS_DIV_A), umpires: 'DIV_B', grounds: [_.clone(GROUNDS.bangalore), _.clone(GROUNDS.chennai), _.clone(GROUNDS.mysore)]},
+    DIV_B: {teams: _.clone(TEAMS_DIV_B), umpires: 'DIV_A', grounds: [_.clone(GROUNDS.bangalore), _.clone(GROUNDS.chennai), _.clone(GROUNDS.dallas)]}
 }
 
 

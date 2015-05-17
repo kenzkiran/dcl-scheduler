@@ -27,7 +27,7 @@ var schedRoundRobin = function(teams, matches, matchNumber) {
     var remainingTeams = teams.slice(1);
     //log.info({remaing: remainingTeams}, "Remaining teams: ");
     for(var i = 0; i < remainingTeams.length; ++i) {
-        var match = new Match(teams[0].name, remainingTeams[i].name);
+        var match = new Match(teams[0].getName(), remainingTeams[i].getName());
         match.setId(getMatchId(matchNumber++));
         matches.push(match);
         log.info("New Match: " + match.toString());
