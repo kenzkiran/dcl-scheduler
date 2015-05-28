@@ -1,0 +1,14 @@
+{
+  "name": "dcl-schedule-checker",
+  "version": "0.0.0",
+  "description": "DCL Schedule Checker",
+  "main": "dcl-schedule-checker.js",
+  "scripts": {
+    "start": "npm dcl-schedule-checker.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+  }
+}
