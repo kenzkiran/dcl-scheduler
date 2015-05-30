@@ -55,6 +55,13 @@ Match.prototype.toString = function() {
     return this.num + ". " +  this.div + ' - ' + this.t1 + "  vs  " + this.t2 + '  U:{' + this.u1 + ',' + this.u2 + '}' + ' @ ' + this.ground +  " at "  +  '[' + this.date + "," + this.time + ']';
 };
 
+Match.prototype.isLeather = function() {
+  if (this.div.length >= 1)
+    return (this.div[0] === 'l' || this.div[0] === 'L');
+  else
+    return false;
+};
+
 /* END OF MATCH */
 
 var getTeam = function(teamName) {
@@ -236,7 +243,7 @@ var getGroundStats = function(matches) {
         }
     }
     return groundStats;
-}
+};
 
 var dumpGroundStats = function(gs)
 {
@@ -262,7 +269,7 @@ var getSlotStats = function(matches) {
         }
     }
     return slotStats;
-}
+};
 
 var dumpSlotStats = function(ss)
 {
@@ -335,6 +342,20 @@ var checkScheduleConflicts = function(team) {
         u.hasConflict = false;
         combined.push(u);
     }
+    var isNextOrPreviousDay = function(strDate1, strDate2) {
+        // expects date format to be month/day/year
+        var d1 = new Date(strDate1);
+        var d2 = new Date(strDate2);
+        var nextDay = new Date(d1);
+        nextDay.setDate(d1.getDate() + 1);
+        var prevDay = new Date(d1);
+        prevDay.setDate(d1.getDate() - 1);
+
+        if (d2.getTime() === nextDay.getTime() || d2.getTime() === prevDay.getTime()) {
+            return true;
+        }
+        return false;
+    };
 
     var checkConflict = function(checkMatch, theIndex, theCombinedArray) {
         var date = checkMatch.date;
@@ -348,6 +369,13 @@ var checkScheduleConflicts = function(team) {
                 // It is NOT a conflict to have 2 Umpiring on the same day.
                 // Any other combination is a conflict
                 if (!(checkMatch.type === 'U' && againstMatch.type === 'U')) {
+                    againstMatch.hasConflict = true;
+                    c.conflict.push(againstMatch);
+                }
+            } // Check if we have back-to-back leather or tape ball matches
+            else if (checkMatch.type === 'M' && againstMatch.type === 'M'
+                && checkMatch.div === againstMatch.div) {
+                if(isNextOrPreviousDay(checkMatch.date, againstMatch.date)) {
                     againstMatch.hasConflict = true;
                     c.conflict.push(againstMatch);
                 }
@@ -384,6 +412,15 @@ var sortTeams = function() {
     return sorted;
 };
 
+var dumpConflicts = function(conflicts) {
+    for(var j = 0; j < conflicts.length; ++j) {
+        console.log(" === Conflict: " + j + " ===>");
+        var c = conflicts[j].conflict;
+        for (var i = 0; i < c.length; ++i) {
+            console.log(c[i].toString());
+        }
+    }
+};
 
 /* Actual code */
 if (process.argv.length >= 3) {
@@ -414,11 +451,12 @@ for(var i = 0; i < sorted.length; ++i) {
     console.log("----------------------------------------");
     var conflicts  = checkScheduleConflicts(t);
     if (conflicts.length) {
-        console.log(" Team : " + t.name);
-        console.log(" Conflicts: " + JSON.stringify(conflicts));
+        console.log(" Team : " + t.name + "  has Conflicts: ");
+        //console.log(" Conflicts: " + JSON.stringify(conflicts));
+        dumpConflicts(conflicts);
     } else {
-        console.log(" Team : " + t.name + " No Conflicts!");
+        console.log(" Team : " + t.name + " has No Conflicts!");
     }
-    console.log("----------------------------------------");
+    //console.log("----------------------------------------");
 }
 
