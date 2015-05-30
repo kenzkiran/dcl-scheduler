@@ -4,6 +4,11 @@ This is DCL Schedule checker. This code will consider a Schedule Conflict if the
 
 1. A Team has 'Match' and 'Umpiring' on the same DAY.
 2. A Team has two or more 'Match'es on the same DAY
+3. A Team belonging to same Division will not have consecutive match days.  
+   e.g. Mysore CC vs Karnataka CC belonging to division **"LA"** match on 10/6/2015  
+          Mysore CC vs KesariBath CC belonging to division **"TA"**  match on 10/7/2015 <- **NO Conflict (Belong to Different Divisions)**    
+   e.g. Mysore CC vs Karnataka CC belonging to division **"LA"** match on 10/6/2015    
+          Mysore CC vs MasalaDose CC belonging to division **"LA"**  match on 10/7/2015 <- **HAS Conflict (Mysore CC has conflicts)**  
 
 Note: A Team can have two or more 'Umpiring' on the same day.  
 Note: If a Team registers for Tape ball and Leather ball in two different names, the algorithm will consider it two teams.  
