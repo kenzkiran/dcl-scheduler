@@ -44,7 +44,8 @@ The above line will split into the following sections:
 
 The current one also collects simple stats about the games scheduled. Here is a sample one for a team:
  
-  
+```
+/*
  *********************************************************************  
      STATS:Cirrus Division : B  
  *********************************************************************  
@@ -111,6 +112,7 @@ Number of Umpiring: 9
 ----------------------END OF UMPIRING STATS ---------------------------
 
  *********************************************************************  
-
+*/
+```
 
 **Note: More stats comming later....**
