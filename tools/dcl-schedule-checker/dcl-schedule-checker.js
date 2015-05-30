@@ -4,9 +4,7 @@
 
 var fs=require("fs");
 var _ = require("underscore");
-//var csvFile = "./test.csv";
-var csvFile = "./dcl-summer-latest.csv";
-//var csvFile = "./cirrus.csv";
+var csvFile = "./schedule.csv";
 var matches = [];
 var divisions = [];
 var teams = [];
@@ -146,12 +144,9 @@ Division.prototype.addTeam = function(newTeam) {
  * @param line
  */
 var parseLinesToMatches = function(line) {
-
-    console.log(typeof line);
     if(line[0] === ',') {
         line = line.substring(1, line.length);
     }
-    console.log(line);
     var split = line.split(',');
     for (i in split) {
         //console.log("Split: " + split[i]);
@@ -391,18 +386,25 @@ var sortTeams = function() {
 
 
 /* Actual code */
+if (process.argv.length >= 3) {
+    csvFile = process.argv[2];
+} else {
+    console.log("=====>  DCLScheduleChecker : No input CSV File, will assume 'schedule.csv' ");
+}
 runAnalyzer();
+
+
+
 var sorted = sortTeams();
 console.log("\n****** DCL SUMMER 2015   **************\n");
 console.log(" Total Number of matches :"  + matches.length);
 console.log(" Total Number of teams :"  + teams.length);
 console.log("\n********************************************");
 
-/*
+
 for(var i = 0; i < sorted.length; ++i) {
     gatherTeamStats(getTeam(sorted[i]));
 }
-*/
 
 console.log("\n********************************************");
 console.log("            Checking Conflicts ");
