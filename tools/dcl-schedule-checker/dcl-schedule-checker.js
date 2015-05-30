@@ -3,8 +3,9 @@
  */
 
 var fs=require("fs");
+var _ = require("underscore");
 //var csvFile = "./test.csv";
-var csvFile = "./dcl-summer.csv";
+var csvFile = "./dcl-summer-latest.csv";
 //var csvFile = "./cirrus.csv";
 var matches = [];
 var divisions = [];
@@ -54,7 +55,7 @@ function Match(num, week, date, div, t1, t2, ground, u1, u2, weekday, time) {
 };
 Match.prototype.toString = function() {
     return this.num + ". " +  this.div + ' - ' + this.t1 + "  vs  " + this.t2 + '  U:{' + this.u1 + ',' + this.u2 + '}' + ' @ ' + this.ground +  " at "  +  '[' + this.date + "," + this.time + ']';
-}
+};
 
 /* END OF MATCH */
 
@@ -84,11 +85,11 @@ function Team(name) {
 
 Team.prototype.addMatch = function(m) {
     this.matches.push(m);
-}
+};
 
 Team.prototype.addUmpiring = function(m) {
     this.umpiring.push(m);
-}
+};
 
 /* BEGIN DIVISION */
 var getDivision = function(divName) {
@@ -98,7 +99,7 @@ var getDivision = function(divName) {
         }
     }
     return null;
-}
+};
 
 var addDivision = function(newDiv)
 {
@@ -107,7 +108,7 @@ var addDivision = function(newDiv)
         divisions.push(newDiv);
     }
     return newDiv;
-}
+};
 
 /**
  *
@@ -118,7 +119,7 @@ var addDivision = function(newDiv)
 function Division(name) {
     this.name = name;
     this.teams = [];
-}
+};
 
 Division.prototype.findTeam = function(teamName) {
     var index = teams.indexOf(teamName);
@@ -126,7 +127,7 @@ Division.prototype.findTeam = function(teamName) {
         return null;
     }
     return getTeam(teamName);
-}
+};
 
 Division.prototype.addTeam = function(newTeam) {
     if(null === this.findTeam(newTeam.name)) {
@@ -137,9 +138,6 @@ Division.prototype.addTeam = function(newTeam) {
     //console.log("Warning " + newTeam.name + " already in Div: " + this.name);
     return newTeam;
 };
-
-
-
 /* END OF DIVISION */
 
 
@@ -148,12 +146,20 @@ Division.prototype.addTeam = function(newTeam) {
  * @param line
  */
 var parseLinesToMatches = function(line) {
+
+    console.log(typeof line);
+    if(line[0] === ',') {
+        line = line.substring(1, line.length);
+    }
+    console.log(line);
     var split = line.split(',');
     for (i in split) {
         //console.log("Split: " + split[i]);
     }
-    var m = new Match(split[0], split[1], split[2], split[3], split[4], split[5], split[6], split[7], split[8], split[9], split[10]);
-    matches.push(m);
+    if (split.length >= 11) {
+        var m = new Match(split[0], split[1], split[2], split[3], split[4], split[5], split[6], split[7], split[8], split[9], split[10]);
+        matches.push(m);
+    }
 };
 
 
@@ -164,7 +170,7 @@ var parseFile = function(fileName) {
         parseLinesToMatches(lineArray[i]);
     }
 
-}
+};
 
 var extractMatchInfo = function(match) {
     //console.log("Match Analysis: " + match.t1 + ' vs ' + match.t2);
@@ -211,7 +217,7 @@ var analyzeMatches = function() {
         //console.log("Analyzing Match : " + m.toString());
         extractMatchInfo(m);
     }
-}
+};
 
 var runAnalyzer =function() {
     //console.log("Running Analyzer: " + csvFile);
@@ -220,7 +226,7 @@ var runAnalyzer =function() {
         //console.log(matches[i].toString());
     }
     analyzeMatches();
-}
+};
 
 
 var getGroundStats = function(matches) {
@@ -247,7 +253,7 @@ var dumpGroundStats = function(gs)
         console.log(gs[k] + " : " + k );
     }
     console.log('------------------------');
-}
+};
 
 var getSlotStats = function(matches) {
     var len = matches.length;
@@ -273,14 +279,14 @@ var dumpSlotStats = function(ss)
         console.log(ss[k] + " : " + k );
     }
     console.log('------------------------');
-}
+};
 
 var dumpMatches = function(matches) {
     for (var i = 0 ; i < matches.length; ++i) {
         console.log(matches[i].toString());
     }
     console.log("--------------------------------------------");
-}
+};
 
 var gatherTeamStats = function(team) {
     var numOfMatches = team.matches.length;
@@ -308,7 +314,69 @@ var gatherTeamStats = function(team) {
     dumpSlotStats(umpiringSlotStats);
     console.log("\n----------------------END OF UMPIRING STATS ---------------------------");
     console.log("\n *********************************************************************");
-}
+};
+
+var checkScheduleConflicts = function(team) {
+    console.log(" Checking Conflicts : " + team.name);
+    var conflicts = [];
+    /*  Logic: we check every match date against every other match and umpiring schedule
+     *  if we have the same date either for a match or umpiring then it is a conflict
+     */
+
+    // first we make a single array, to traverse and also put markers to identify match vs umpiring
+    var matches = team.matches;
+    var umpiring = team.umpiring;
+
+    var combined = [];
+    for(var i = 0; i < matches.length; ++i) {
+        var m = _.clone(matches[i]);
+        m.type = 'M';
+        m.hasConflict = false;
+        combined.push(m);
+    }
+    for(var i = 0; i < umpiring.length; ++i) {
+        var u = _.clone(umpiring[i]);
+        u.type = 'U';
+        u.hasConflict = false;
+        combined.push(u);
+    }
+
+    var checkConflict = function(checkMatch, theIndex, theCombinedArray) {
+        var date = checkMatch.date;
+        var c = { conflict: []};
+        c.conflict.push(checkMatch);
+        for(var i = theIndex + 1; i < theCombinedArray.length; ++i) {
+            // checkMatch against Match for conflicts
+            var againstMatch = theCombinedArray[i];
+            // found two things on the same day
+            if (date === againstMatch.date) {
+                // It is NOT a conflict to have 2 Umpiring on the same day.
+                // Any other combination is a conflict
+                if (!(checkMatch.type === 'U' && againstMatch.type === 'U')) {
+                    againstMatch.hasConflict = true;
+                    c.conflict.push(againstMatch);
+                }
+            }
+        }
+        if(c.conflict.length > 1) {
+            return c;
+        }
+        return null;
+    };
+
+    for(var i = 0; i < combined.length; ++i) {
+        var checkMatch = combined[i];
+        if (checkMatch.hasConflict) {
+            continue;
+        }
+
+        conflict = checkConflict(checkMatch, i, combined);
+        if (conflict) {
+            conflicts.push(conflict);
+        }
+    }
+    return conflicts;
+};
 
 
 var sortTeams = function() {
@@ -325,6 +393,30 @@ var sortTeams = function() {
 /* Actual code */
 runAnalyzer();
 var sorted = sortTeams();
+console.log("\n****** DCL SUMMER 2015   **************\n");
+console.log(" Total Number of matches :"  + matches.length);
+console.log(" Total Number of teams :"  + teams.length);
+console.log("\n********************************************");
+
+/*
 for(var i = 0; i < sorted.length; ++i) {
     gatherTeamStats(getTeam(sorted[i]));
 }
+*/
+
+console.log("\n********************************************");
+console.log("            Checking Conflicts ");
+console.log("********************************************\n");
+for(var i = 0; i < sorted.length; ++i) {
+    var t = getTeam(sorted[i]);
+    console.log("----------------------------------------");
+    var conflicts  = checkScheduleConflicts(t);
+    if (conflicts.length) {
+        console.log(" Team : " + t.name);
+        console.log(" Conflicts: " + JSON.stringify(conflicts));
+    } else {
+        console.log(" Team : " + t.name + " No Conflicts!");
+    }
+    console.log("----------------------------------------");
+}
+
